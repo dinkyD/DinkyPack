@@ -7,13 +7,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
 /**
- * Created by dinkyd.
- * <p>{@code setClassCSS truc, bidule, machin; * ChiadéFeuilleCSS "blablabla..."}</p>
  * {@link TextField} simplifiant la creation de champs non nullable en permettant d' indiquer le nombre de characteres desiré,
  * une bordure coloré en fonction de la validité de l'input et le choix de la couleur à appliquer.
  * Indiquer {@code null}" si la colorisation des bordures n'est pas desiré.
  *
- * @
+ * @author dinkyd
  * @Couleur : {@link javafx.scene.paint.Color}. (vert pour valid et rouge invalid par default.)
  * @min&max int. (minimum 1 charactere, sans max par default.)
  */
@@ -119,7 +117,7 @@ System.out.println("NotNullStrField->Change(): Manque " + (minChar - newValue.le
                 if( valid.get() == false){
                     this.styleProperty().setValue("-fx-border-color:" + nonOkColor);//invalidColor.toString().substring(2));
                 }else{
-                    styleProperty().setValue(String.format("-fx-border-color:%s", okColor ));// validColor));
+                    this.styleProperty().setValue(String.format("-fx-border-color:%s", okColor ));// validColor));
                 }
             });
         }
