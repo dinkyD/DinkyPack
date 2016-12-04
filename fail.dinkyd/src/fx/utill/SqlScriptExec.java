@@ -11,14 +11,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Created by dinkyd.</br>
+ * Execute un fichier script sql vers une connexion JDBC.
+ * <br />
  * <strong>/!\ Driver JDBC necessaire.</strong>
+ *
+ * @support PostgreSQL
+ * @author dinkyd
  */
 public class SqlScriptExec {
     /**
      * Execute le fichier {@code File} sur la connecion {@code connection}
-     * @param connection
-     * @param file
+     * @param connection Connection JDBC vers la bdd
+     * @param file Fichier contenant le script à executer.
      * @throws IOException
      * @throws SQLException
      */
@@ -33,54 +37,35 @@ System.out.println("Lecture de : " + file.getAbsolutePath());
         int count = 0;
         boolean declaringFunction = false;
         while ((line = reader.readLine()) != null) {
-            // different continuation for oracle and postgres
             line = line.trim();
 
             if(line.contains("$$") || line.contains("$_$") || line.contains("$BODY$")) {
                 declaringFunction = !declaringFunction;
             }
-//___            //perso pour postgre!!
-            if( line.contains("CREATE OR REPLACE")){
-System.out.println("SQLScriptEngine.execute(): c'est une FUNCTION !!");
+/*
+--------------      PLPGSQL
+ */
+            if( line.contains("CREATE OR REPLACE")){    //debut de fonction
                 declaringFunction = true;
             }
-
-            if(line.equals("LANGUAGE 'plpgsql';")){
-
+            if(line.equals("LANGUAGE 'plpgsql';")) {    //fin de fonction plpgsql
                 sqlBuf.append(' ');
                 sqlBuf.append(line);
                 statementReady = true;
-            }
-
-
-//___ Gaffe au else if qui suis si tu enleve la chiote du dessus..
-
-            else if (line.equals("--/exe/--"))   // execute finished statement for postgres
-            {
-                sqlBuf.append(' ');
-                statementReady = true;
-            }
-            else if (line.equals("/")) // execute finished statement for oracle
-            {
-                sqlBuf.append(' ');
-                statementReady = true;
-            }
-            else if (line.startsWith("--") || line.length() == 0)  // comment or empty
+            }else if (line.startsWith("--") || line.length() == 0)  // comment or empty
             {
                 continue;
             }
-            else if (!declaringFunction && line.endsWith(";"))
-            {
+            else if (!declaringFunction && line.endsWith(";")){
                 sqlBuf.append(' ');
                 statementReady = true;
                 sqlBuf.append(line.substring(0, line.length() - 1));
-            }
-            else
-            {
+            }else{
                 sqlBuf.append(' ');
                 sqlBuf.append(line);
                 statementReady = false;
             }
+
             if (statementReady) {
                 if (sqlBuf.length() == 0) continue;
 System.out.println(sqlBuf.toString());

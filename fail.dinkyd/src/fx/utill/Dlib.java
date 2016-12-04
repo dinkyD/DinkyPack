@@ -3,14 +3,16 @@ package fx.utill;
 import javafx.scene.paint.Color;
 
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
- * Created by dinkyd on 02/12/16.
  * Diverses fonctions static.
  * <ul><li>{@link Dlib#fxColorStrToRGBa(Color)}</li>
+ * <li>{@link Dlib#toUpperFirst(String)}</li>
  * <li></li>
  * </ul>
  * @see Color
+ * @author dinkyd.
  */
 public class Dlib {
 
@@ -39,5 +41,43 @@ public class Dlib {
         char[] tC = str.toCharArray();
         tC[0] = Character.toUpperCase(tC[0]);
         return new String(tC);
+    }
+
+    /**
+     * Converti un String en int en supriman les characteres de
+     * separation courant de numero de telephone.
+     * /!\ à la plage des ints, pas genant pour la plage française. (21.47.483 647)
+     * @param strTel
+     * @return intTel ou -1 si numero invalid.
+     * @support <ul><li>Numero fr :</li></ul>
+     * @support Separation '-', '/', '.' ou ' '.
+     */
+    public static int strTel2Int(String strTel){
+
+        if( !isOkPhoneInput(strTel))
+            return -1;
+
+        Pattern regSpec = Pattern.compile("[-/. ]");
+        String str = regSpec.matcher(strTel).replaceAll("");
+
+        System.out.println(regSpec.matcher(strTel).replaceAll(""));
+
+        return  Integer.parseInt(str);
+    }
+    /**
+     * Verifie si le String phoneInput est un numero de telephone valide
+     * @param phoneInput
+     * @return bool
+     */
+    public static boolean isOkPhoneInput(String phoneInput) {
+        Boolean isOk = false;
+
+        //pour tel fr
+        Pattern regFr = Pattern.compile("^0[1-9]([-/. ]?[0-9]{2}){4}$");
+        if (regFr.matcher(phoneInput).matches())
+            isOk = true;
+        //TODO isOkPhoneInput() autres !=regions
+
+        return isOk;
     }
 }
